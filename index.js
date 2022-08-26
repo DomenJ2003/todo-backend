@@ -41,7 +41,11 @@ app.get("/api/v1/users", async (req, res) => {
 app.get("/api/v1/profile", [middleware], async (req, res) => {
   const data = await Users.getProfile(req.USER_ID);
   const userPosts = await Posts.getPostsByUserId(req.USER_ID);
-  res.json({ profile: data.length ? data[0] : {}, posts: userPosts });
+  res.json({
+    profile: data.length ? data[0] : {},
+    posts: userPosts,
+    test: true,
+  });
 });
 
 app.post("/api/v1/login", async (req, res) => {

@@ -16,7 +16,7 @@ class Posts {
   static getPostsByUserId(id) {
     return new Promise((resolve) => {
       const sql = `
-                select * from posts
+                select posts.*, users.name, users.email from posts
                 inner join users on users.id = posts.user_id
                 where posts.user_id = ?
             `;
