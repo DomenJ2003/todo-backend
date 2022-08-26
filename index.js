@@ -2,39 +2,35 @@ const express = require("express");
 const path = require("path");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const db = require("./services/db");
+
 const Posts = require("./services/posts");
 const Users = require("./services/users");
 const middleware = require("./services/middleware");
 
 const app = express();
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json({ limit: "500mb" }));
+app.use(bodyParser.urlencoded({ limit: "500mb", extended: true }));
 app.use(cors());
 
 app.get("/", (req, res) => {
-  res.json({
-    test: "hello",
-  });
+  res.json({ test: "hello" });
 });
 
 app.get("/api/v1/posts", async (req, res) => {
   const data = await Posts.getAllPosts();
-  res.json({
-    posts: data,
-  });
+  res.json({ posts: data });
 });
 
-app.post("/api/v1/create/post", (req, res) => {
+app.post("/api/v1/create/post", [middleware], async (req, res) => {
   const post = {
-    title: "naslov",
-    content: "vsebina",
-    date: "nek date",
+    title: req.body.title,
+    content: req.body.content,
+    date: req.body.date,
+    image: req.body.image,
+    user_id: req.USER_ID,
   };
   const success = Posts.insertPost(post);
-  res.json({
-    success: success,
-  });
+  res.json({ success });
 });
 
 app.get("/api/v1/users", async (req, res) => {
@@ -44,7 +40,8 @@ app.get("/api/v1/users", async (req, res) => {
 
 app.get("/api/v1/profile", [middleware], async (req, res) => {
   const data = await Users.getProfile(req.USER_ID);
-  res.json({ profile: data.length ? data[0] : {} });
+  const userPosts = await Posts.getPostsByUserId(req.USER_ID);
+  res.json({ profile: data.length ? data[0] : {}, posts: userPosts });
 });
 
 app.post("/api/v1/login", async (req, res) => {
@@ -67,16 +64,12 @@ app.post("/api/v1/register", async (req, res) => {
     email: req.body.email,
     password: req.body.password,
   };
-  const success = await Users.register(user);
 
+  const success = await Users.register(user);
   if (success) {
-    const [status, msg, jwt] = await Users.login(user);
+    const [success, msg, jwt] = await Users.login(user);
     const newUser = await Users.getByEmail(user.email);
-    res.json({
-      user: newUser,
-      jwt,
-      success: true,
-    });
+    res.json({ user: newUser, jwt, success: true });
   } else {
     res.json({ success: false });
   }
