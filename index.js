@@ -85,6 +85,14 @@ app.get("/api/v1/count", [middleware], async (req, res) => {
 });
 
 
+app.post("/api/v1/posts/delete", [middleware], async (req, res) => {
+  Posts.deletePost(req.body.id)
+  const data = await Posts.getAllPosts();
+  res.json({ posts: data });
+})
+
+
+
 const port = process.env.PORT || 5000;
 app.listen(port);
 
