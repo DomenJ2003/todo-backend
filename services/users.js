@@ -23,7 +23,17 @@ class Users {
     });
   }
 
-  static register({ name, email, password }) {
+  static async register({ name, email, password }) {
+    const allUsers = await Users.getAllUsers()
+    let mailError = false;
+    allUsers.map((user) => {
+      if (user.email === email) {
+        mailError = true;
+      }
+    })
+    if (mailError) {
+      return false;
+    }
     const insert = "insert into users (name, email, password) values (?,?,?);";
     db.run(insert, [name, email, md5(SECRET_KEY + email + password)]);
     return true;
@@ -54,6 +64,18 @@ class Users {
             }
           });
         }
+      });
+    });
+  }
+
+
+  static countPosts() {
+    return new Promise((resolve) => {
+      const sql = `select count(*) as post_count, users.* from posts
+            inner join users on users.id = posts.user_id
+            group by users.id`;
+      db.all(sql, [], (err, rows) => {
+        resolve(rows);
       });
     });
   }

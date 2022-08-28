@@ -71,13 +71,19 @@ app.post("/api/v1/register", async (req, res) => {
 
   const success = await Users.register(user);
   if (success) {
-    const [success, msg, jwt] = await Users.login(user);
+    const [success1, msg, jwt] = await Users.login(user);
     const newUser = await Users.getByEmail(user.email);
-    res.json({ user: newUser, jwt, success: true });
+    res.json({ user: newUser, jwt, success: success });
   } else {
     res.json({ success: false });
   }
 });
+
+app.get("/api/v1/count", [middleware], async (req, res) => {
+  const data = await Users.countPosts();
+  res.json({ data });
+});
+
 
 const port = process.env.PORT || 5000;
 app.listen(port);

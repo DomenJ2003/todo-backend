@@ -7,7 +7,8 @@ const TABLES = {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name text, 
         email text, 
-        password text
+        password text,
+        date_c text
     );`,
   posts: `CREATE TABLE IF NOT EXISTS posts (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -28,30 +29,35 @@ const SEED = {
       "Janez",
       "janez@gmail.com",
       md5(SECRET_KEY + "janez@gmail.com" + "test123"),
+      new Date().toLocaleDateString()
     ],
     [
       2,
-      "Å½oga",
+      "žoga",
       "zoga@gmail.com",
       md5(SECRET_KEY + "zoga@gmail.com" + "test123"),
+      new Date().toLocaleDateString()
     ],
     [
       3,
       "Sergej",
       "sergej@gmail.com",
       md5(SECRET_KEY + "sergej@gmail.com" + "test123"),
+      new Date().toLocaleDateString()
     ],
     [
       4,
       "Domen",
       "domen@gmail.com",
       md5(SECRET_KEY + "domen@gmail.com" + "test123"),
+      new Date().toLocaleDateString()
     ],
     [
       5,
       "Lukec",
       "lukec@gmail.com",
       md5(SECRET_KEY + "lukec@gmail.com" + "test123"),
+      new Date().toLocaleDateString()
     ],
   ],
   posts: [
@@ -67,7 +73,7 @@ const SEED = {
 };
 
 const INSERTS = {
-  users: "insert into users (id, name, email, password) values (?,?,?,?);",
+  users: "insert into users (id, name, email, password, date_c) values (?,?,?,?,?);",
   posts: "insert into posts (title, content, date, user_id) values (?,?,?,?);",
 };
 
